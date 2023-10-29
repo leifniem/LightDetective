@@ -20,7 +20,7 @@
   "license": "ISC",
   "devDependencies": {
     "postcss-preset-env": "^7.4.2",
-    "vite": "^2.8.6"
+    "vite": "^2.9.16"
   },
   "dependencies": {
     "@babel/core": "^7.17.5",
