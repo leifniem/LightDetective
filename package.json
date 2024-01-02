@@ -1,42 +1,51 @@
 {
-  "name": "lightdetective",
-  "version": "1.0.0",
-  "description": "A client-side preset extractor for Adobe Lightroom adjustments",
-  "main": "index.html",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/leifniem/LightDetective.git"
-  },
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build"
-  },
-  "keywords": [
-    "lightroom",
-    "exif",
-    "preset"
-  ],
-  "author": "Leif Niemczik",
-  "license": "ISC",
-  "devDependencies": {
-    "postcss-preset-env": "^7.4.2",
-    "vite": "^2.9.16"
-  },
-  "dependencies": {
-    "@babel/core": "^7.17.5",
-    "@babel/preset-env": "^7.16.11",
-    "autoprefixer": "^10.4.2",
-    "exifreader": "^4.3.1",
-    "file-saver": "^2.0.5",
-    "postcss-input-range": "^5.0.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ],
-  "babel": {
-    "presets": [
-      "env"
-    ]
-  }
+	"name": "lightdetective",
+	"version": "4.0.2",
+	"description": "A client-side preset extractor for Adobe Lightroom adjustments",
+	"main": "index.html",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/leifniem/LightDetective.git"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build"
+	},
+	"keywords": [
+		"lightroom",
+		"exif",
+		"preset"
+	],
+	"author": "Leif Niemczik",
+	"license": "ISC",
+	"devDependencies": {
+		"postcss-preset-env": "^7.8.3",
+		"vite": "^2.9.16"
+	},
+	"dependencies": {
+		"@babel/core": "^7.23.7",
+		"@babel/preset-env": "^7.23.7",
+		"autoprefixer": "^10.4.16",
+		"exifreader": "^4.20.0",
+		"file-saver": "^2.0.5",
+		"postcss-input-range": "^5.0.0"
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions"
+	],
+	"babel": {
+		"presets": [
+			"env"
+		]
+	},
+	"pnpm": {
+		"packageExtensions": {
+			"posix": {
+				"optionalDependencies": {
+					"node-gyp": "*"
+				}
+			}
+		}
+	}
 }
