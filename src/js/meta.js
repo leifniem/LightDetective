@@ -144,10 +144,9 @@ export function settings(exif) {
 	<div class="block">
 	<span class="label">Curves</span>
 	<div>
-	<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 255 255">
-	<rect width="100%" height="33%" y="33%" fill="none" stroke="#4c4c53" stroke-width="1" stroke-dasharray="4,4" />>
-	<rect width="33%" height="100%" x="33%" fill="none" stroke="#4c4c53" stroke-width="1" stroke-dasharray="4,4" />
-	<rect width="100%" height="100%" fill="none" stroke="#4c4c53" stroke-width="4" />
+	<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 255 255" class="curves">
+	<rect width="102%" height="33%" x="-1%" y="33%" fill="none" stroke="#4c4c53" stroke-width="1" stroke-dasharray="4,4" />>
+	<rect width="33%" height="102%" y="-1%" x="33%" fill="none" stroke="#4c4c53" stroke-width="1" stroke-dasharray="4,4" />
   ${renderToneCurves(exif.ToneCurvePV2012Red, "red")}
   ${renderToneCurves(exif.ToneCurvePV2012Green, "green")}
   ${renderToneCurves(exif.ToneCurvePV2012Blue, "blue")}
