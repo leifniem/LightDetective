@@ -167,9 +167,16 @@ a {
   break-inside: avoid;
 }
 
+.row {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
 .cell {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .value {
@@ -320,6 +327,49 @@ input {
 
 .curves {
   border: 2px solid #4c4c53;
+}
+
+.color-grading-cell {
+  width: 100%;
+  max-width: 48%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.color-grading-circle {
+  width: calc(100% - 2rem);
+  margin: 0 1rem;
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(white 5%, transparent 80%),
+    conic-gradient(yellow, orange, red, magenta, purple, blue, aqua, lime, yellow);
+}
+
+.color-grading-circle .value-circle {
+  width: 1rem;
+  aspect-ratio: 1;
+  border: 2px solid #888;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(sin(var(--hue)) * 50% * (var(--sat) / 100) + 50%);
+  top: calc((1 - cos(var(--hue))* (var(--sat) / 100)) * 50%);
+  transform: translate(-50%, -50%);
+}
+
+.color-grading-circle .color-circle {
+  width: .75rem;
+  aspect-ratio: 1;
+  background: hsl(calc(var(--hue)), calc(var(--sat) * 100%), 50%);
+  border-radius: 50%;
+  position: absolute;
+  left: calc(sin(var(--hue)) * (50% + .75rem) + 50%);
+  top: calc((1 - cos(var(--hue))) * (50% + .75rem) - .75rem);
+  transform: translate(-50%, -50%);
 }
 
 @media screen and (max-width: 960px) {

@@ -1,5 +1,5 @@
 export default (exif, filename) => {
-	return `
+	return /* html */ `
 	<h3>Metadata</h3>
 	<span class="label">Filename</span>
 	<div class="data">${filename}</div>
@@ -31,7 +31,7 @@ export default (exif, filename) => {
 }
 
 function sliderCell(label, sliderClass, value, min, max) {
-	return `
+	return /* html */ `
 	<div class="cell slider-cell">
 	${label}
 	<div>
@@ -46,6 +46,26 @@ function sliderCell(label, sliderClass, value, min, max) {
 	/>
 	</div>
 	</div>
+	`
+}
+
+function colorGradingCell(label, sliderValue, hue, sat) {
+	return /* html */ `
+	<div class="color-grading-cell">
+	${label}
+    <div class="color-grading-circle" style="--hue: ${hue}deg; --sat: ${sat}">
+      <div class="value-circle"></div>
+      <div class="color-circle"></div>
+    </div>
+    <input
+    type="range"
+    class="slider slider-bw"
+    value="${sliderValue || 0}"
+    min="-100"
+    max="100"
+    disabled
+    />
+  </div>
 	`
 }
 
@@ -214,6 +234,49 @@ export function settings(exif) {
 	<span class="label">Balance</span>
 	${sliderCell("Balance", "slider-bw", exif.SplitToningBalance, -100, +100)}
 	</div>
+	<div class="block">
+	<span class="label">Color Grading</span>
+  <div class="row">
+    ${
+			exif.ColorGradeGlobalSat !== "0"
+				? colorGradingCell(
+						"Global",
+						exif.ColorGradeGlobalLum ?? 0,
+						exif.ColorGradeGlobalHue ?? 0,
+						exif.ColorGradeGlobalSat ?? 0
+				  )
+				: ""
+		}
+    ${colorGradingCell(
+			"Midtones",
+			exif.ColorGradeMidtoneLum ?? 0,
+			exif.ColorGradeMidtoneHue ?? 0,
+			exif.ColorGradeMidtoneSat ?? 0
+		)}
+  </div>
+  <div class="row">
+    ${colorGradingCell(
+			"Shadows",
+			exif.ColorGradeShadowLum ?? 0,
+			exif.ColorGradeShadowHue ?? 0,
+			exif.ColorGradeShadowSat ?? 0
+		)}
+    ${colorGradingCell(
+			"Highlights",
+			exif.ColorGradeHighlightLum ?? 0,
+			exif.ColorGradeHighlightHue ?? 0,
+			exif.ColorGradeHighlightSat ?? 0
+		)}
+  </div>
+  	${sliderCell(
+			"Blending",
+			"slider-bw",
+			exif.ColorGradeBlending ?? 0,
+			-100,
+			+100
+		)}
+  	${sliderCell("Balance", "slider-bw", exif.ColorGradeBalance ?? 0, -100, +100)}
+  </div>
 	<div class="block">
 	<span class="label">Details</span>
 	<div class="cell">Sharpening</div>
