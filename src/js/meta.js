@@ -115,20 +115,21 @@ function stringToXY(input) {
 export function settings(exif) {
 	return /* html */ `
 	<h3>Settings</h3>
-	${
-		"Look" in exif && exif.Look
-			? `<div class="block">
-			<span class="label">Look</span>` +
-			  exif.Look.Name +
-			  sliderCell(
-					"Amount",
-					"slider-bw",
-					Math.round(parseFloat(exif.Look.Amount) * 100),
-					0,
-					200
-			  )
-			: ""
-	}
+	<div class="block">
+  <!-- image-metadata-extractor currently has an issue extracting RDF structs -->
+	<!-- <span class="label">Look</span>
+	  ${exif.Look ?? "Look not available"}
+	  ${
+			exif.Look?.Amount
+				? sliderCell(
+						"Amount",
+						"slider-bw",
+						Math.round(parseFloat(exif.Look?.Amount) * 100),
+						0,
+						200
+				  )
+				: ""
+		} -->
 	<span class="label">White Balance</span>
 	${exif.WhiteBalance}
 	${sliderCell(
@@ -147,6 +148,7 @@ export function settings(exif) {
 	)}
 	</div>
 	<div class="block">
+  <span class="label">Basic Settings</span>
 	${sliderCell("Exposure", "slider-bw", exif.Exposure2012, -5, +5)}
 	${sliderCell("Contrast", "slider-bw", exif.Contrast2012, -100, +100)}
 	${sliderCell("Highlights", "slider-bw", exif.Highlights2012, -100, +100)}
@@ -156,6 +158,7 @@ export function settings(exif) {
 	</div>
 	<div class="block">
 	<span class="label">Presence</span>
+	${sliderCell("Texture", "slider-bw", exif.Texture, -100, +100)}
 	${sliderCell("Clarity", "slider-bw", exif.Clarity2012, -100, +100)}
 	${sliderCell("Dehaze", "slider-bw", exif.Dehaze, -100, +100)}
 	${sliderCell("Vibrance", "slider-bw", exif.Vibrance, -100, +100)}
@@ -341,7 +344,6 @@ export function settings(exif) {
 	</div>
 	<div class="block">
 	<span class="label">Corrections</span>
-	<span class="label">Lens Correction</span>
 		<div class="cell">Distortion <span>${
 			exif.DistortionCorrectionAlreadyApplied
 				? exif.DistortionCorrectionAlreadyApplied

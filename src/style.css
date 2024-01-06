@@ -51,7 +51,9 @@ img {
   font-size: 0.8rem;
   border: 0;
   outline: none;
-  font-weight: bold;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
 }
 
 .button:hover,

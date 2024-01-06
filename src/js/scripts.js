@@ -67,6 +67,7 @@ async function processFile(file) {
 		imageReader.readAsDataURL(file)
 		const raw = await readFile(file)
 		const parsed = await parseResult(raw)
+		if (!parsed.XMP) throw new Error("No XMP data in EXIF")
 		const td = new TextDecoder()
 		rawXMP = td.decode(parsed.XMP.content)
 		console.log(parsed)
@@ -77,6 +78,7 @@ async function processFile(file) {
 			...parsed.XMP.parsed.crs,
 			...parsed.XMP.parsed.rdf
 		}
+		window.navigator.clipboard.writeText(rawXMP)
 		metaDataContainer.innerHTML = meta(exif, filename)
 		settingsDataContainer.innerHTML = settings(exif)
 	} catch (err) {
@@ -84,7 +86,10 @@ async function processFile(file) {
 			"There has been an issue reading necessary data. It is as follows: "
 		)
 		console.error(err)
-		resultContainer.innerHTML = `<h3>Ouch, either no EXIF data to be found here or an issue.</h3>
+		resultContainer.innerHTML = /* html */ `<h3>Ouch, either no EXIF data to be found here or an issue.</h3>
+		<br/>
+    <p>Error Message:</p>
+    <pre>${err}</pre>
 		<br/>
 		<a href="." class="button retry">Try another file ↻</a>`
 	}
