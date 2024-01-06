@@ -14,38 +14,24 @@
 	"keywords": [
 		"lightroom",
 		"exif",
-		"preset"
+		"preset",
+		"xmp",
+		"adobe"
 	],
 	"author": "Leif Niemczik",
 	"license": "ISC",
 	"devDependencies": {
+		"autoprefixer": "^10.4.16",
+		"postcss-input-range": "^5.0.0",
 		"postcss-preset-env": "^7.8.3",
 		"vite": "^2.9.16"
 	},
 	"dependencies": {
-		"@babel/core": "^7.23.7",
-		"@babel/preset-env": "^7.23.7",
-		"autoprefixer": "^10.4.16",
-		"exifreader": "^4.20.0",
 		"file-saver": "^2.0.5",
-		"postcss-input-range": "^5.0.0"
+		"image-info-extractor": "^0.1.0"
 	},
 	"browserslist": [
 		"> 1%",
 		"last 2 versions"
-	],
-	"babel": {
-		"presets": [
-			"env"
-		]
-	},
-	"pnpm": {
-		"packageExtensions": {
-			"posix": {
-				"optionalDependencies": {
-					"node-gyp": "*"
-				}
-			}
-		}
-	}
+	]
 }

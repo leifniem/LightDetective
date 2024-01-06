@@ -1,8 +1,6 @@
-import ExifReader from "exifreader"
 import { saveAs } from "file-saver"
-import template from "./lib/template"
-import meta, { settings } from "./lib/meta"
-import { fixOutdated } from "./lib/properties"
+import meta, { settings } from "./meta"
+import { readFile, parseResult } from "image-info-extractor"
 
 const dropArea = document.querySelector("#drop")
 const imageInput = document.querySelector("#image-input")
@@ -13,59 +11,83 @@ const download = document.querySelector(".download")
 let link = document.querySelector(".download-link")
 let headerImage = document.querySelector("#header-image")
 let metaDataContainer = document.querySelector(".meta")
-let settingsDataContainer = document.querySelector('.settings')
+let settingsDataContainer = document.querySelector(".settings")
 
-const exifDataReader = new FileReader()
 const imageReader = new FileReader()
 
-let filledTemplate
+let rawXMP
 let filename
-
-	;["dragenter", "dragover"].forEach(eventName => {
-		dropArea.addEventListener(eventName, addHighlight, false)
-	})
-
-	;["dragleave", "drop"].forEach(eventName => {
-		dropArea.addEventListener(eventName, removeHighlight, false)
-	})
-
-	;["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
-		dropArea.addEventListener(eventName, preventDefaults, false)
-	})
-
-	imageInput.addEventListener('change', (e) => {
-		processFile(e.target.files[0])
-	})
+;["dragenter", "dragover"].forEach(eventName => {
+	dropArea.addEventListener(eventName, addHighlight, false)
+})
+;["dragleave", "drop"].forEach(eventName => {
+	dropArea.addEventListener(eventName, removeHighlight, false)
+})
+;["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+	dropArea.addEventListener(eventName, preventDefaults, false)
+})
 
 function preventDefaults(e) {
 	e.preventDefault()
 	e.stopPropagation()
 }
 
-dropArea.addEventListener("drop", getFile, false)
+imageInput.addEventListener("change", e => {
+	processFile(e.target.files[0])
+})
 
-retry.addEventListener("click", () => { location.reload() }, false)
+dropArea.addEventListener(
+	"drop",
+	e => processFile(e.dataTransfer.files[0]),
+	false
+)
+
+retry.addEventListener(
+	"click",
+	() => {
+		location.reload()
+	},
+	false
+)
 
 download.addEventListener("click", downloadPreset, false)
 
-function addHighlight(e) {
+function addHighlight() {
 	dropArea.classList.add("highlight")
 }
 
-function removeHighlight(e) {
+function removeHighlight() {
 	dropArea.classList.remove("highlight")
 }
 
-function getFile(e) {
-	const dt = e.dataTransfer
-	processFile(dt.files[0])
-}
-
-function processFile(file) {
-	dropArea.classList.add("loading")
-	filename = file.name
-	imageReader.readAsDataURL(file)
-	exifDataReader.readAsArrayBuffer(file)
+async function processFile(file) {
+	try {
+		dropArea.classList.add("loading")
+		filename = file.name
+		imageReader.readAsDataURL(file)
+		const raw = await readFile(file)
+		const parsed = await parseResult(raw)
+		const td = new TextDecoder()
+		rawXMP = td.decode(parsed.XMP.content)
+		console.log(parsed)
+		const exif = {
+			...parsed.EXIF.parsed.tiff,
+			...parsed.EXIF.parsed.exif,
+			...parsed.XMP.parsed.xmp,
+			...parsed.XMP.parsed.crs,
+			...parsed.XMP.parsed.rdf
+		}
+		metaDataContainer.innerHTML = meta(exif, filename)
+		settingsDataContainer.innerHTML = settings(exif)
+	} catch (err) {
+		console.error(
+			"There has been an issue reading necessary data. It is as follows: "
+		)
+		console.error(err)
+		resultContainer.innerHTML = `<h3>Ouch, either no EXIF data to be found here or an issue.</h3>
+		<br/>
+		<a href="." class="button retry">Try another file ↻</a>`
+	}
 }
 
 imageReader.onload = () => {
@@ -76,40 +98,7 @@ imageReader.onload = () => {
 	headerImage.style.backgroundSize = "cover, cover"
 }
 
-exifDataReader.onload = () => {
-	try {
-		let exifData = ExifReader.load(exifDataReader.result)
-		exifData = fixOutdated(exifData)
-		exifData.UUID = {
-			description: createUUID()
-		}
-		if (!exifData.ProcessVersion) exifData.ProcessVersion = "11.0"
-		console.log(exifData)
-		let metaData = meta(exifData, filename)
-		metaDataContainer.innerHTML = metaData
-		let settingsData = settings(exifData)
-		settingsDataContainer.innerHTML = settingsData
-		filledTemplate = template(exifData, filename)
-	} catch (err) {
-		console.error("There has been an issue reading necessary data. It is as follows: ")
-		console.error(err)
-		resultContainer.innerHTML = `<h3>Ouch, either no EXIF data to be found here or an issue.</h3>
-		<br/>
-		<a href="." class="retry">Try another file ↻</a>`
-	}
-}
-
 function downloadPreset() {
-	let data = new Blob([filledTemplate], { type: 'application/rdf+xml' })
-	saveAs(data, `${filename.replace(/\.\w*$/, "")}.xmp`)
-}
-
-function createUUID() {
-	var dt = new Date().getTime();
-	var uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		var r = (dt + Math.random() * 16) % 16 | 0;
-		dt = Math.floor(dt / 16);
-		return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-	});
-	return uuid.toUpperCase();
+	let data = new Blob([rawXMP], { type: "application/rdf+xml" })
+	saveAs(data, `${filename.replace(/\.\w*$/, "")}-light-detective.xmp`)
 }
