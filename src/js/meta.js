@@ -212,33 +212,27 @@ export function settings(exif) {
 	<div class="block">
 	<span class="label">Split Toning</span>
 	<span class="label">Shadows</span>
-	${sliderCell(
-		"Hue",
-		"slider-rainbow",
-		exif.SplitToningShadowHue?.value,
-		0,
-		+100
-	)}
+	${sliderCell("Hue", "slider-rainbow", exif.SplitToningShadowHue?.value, 0, 360)}
 	${sliderCell(
 		"Saturation",
 		"slider-blackred",
 		exif.SplitToningShadowSaturation?.value,
 		0,
-		+100
+		100
 	)}
 	<span class="label">Highlights</span>
 	${sliderCell(
 		"Hue",
 		"slider-rainbow",
 		exif.SplitToningHighlightHue?.value,
-		-100,
-		+100
+		0,
+		360
 	)}
 	${sliderCell(
 		"Saturation",
 		"slider-blackred",
 		exif.SplitToningHighlightSaturation?.value,
-		-100,
+		0,
 		+100
 	)}
 	<span class="label">Balance</span>
