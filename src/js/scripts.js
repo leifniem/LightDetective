@@ -1,6 +1,7 @@
 import { saveAs } from "file-saver"
 import meta, { settings } from "./meta"
-import { readFile, parseResult } from "image-info-extractor"
+import exifr from "exifr/dist/lite.esm.mjs"
+import * as exifreader from "exifreader"
 
 const dropArea = document.querySelector("#drop")
 const imageInput = document.querySelector("#image-input")
@@ -64,23 +65,18 @@ async function processFile(file) {
 	try {
 		dropArea.classList.add("loading")
 		filename = file.name
+		const result = await exifreader.load(file, { expanded: true })
+		rawXMP = result.xmp._raw
+		console.log(result)
 		imageReader.readAsDataURL(file)
-		const raw = await readFile(file)
-		const parsed = await parseResult(raw)
-		if (!parsed.XMP) throw new Error("No XMP data in EXIF")
-		const td = new TextDecoder()
-		rawXMP = td.decode(parsed.XMP.content)
-		console.log(parsed)
-		const exif = {
-			...parsed.EXIF.parsed.tiff,
-			...parsed.EXIF.parsed.exif,
-			...parsed.XMP.parsed.xmp,
-			...parsed.XMP.parsed.crs,
-			...parsed.XMP.parsed.rdf
-		}
-		window.navigator.clipboard.writeText(rawXMP)
-		metaDataContainer.innerHTML = meta(exif, filename)
-		settingsDataContainer.innerHTML = settings(exif)
+		metaDataContainer.innerHTML = meta(
+			{ ...result.xmp, ...result.exif },
+			filename
+		)
+		settingsDataContainer.innerHTML = settings({
+			...result.xmp,
+			...result.exif
+		})
 	} catch (err) {
 		console.error(
 			"There has been an issue reading necessary data. It is as follows: "

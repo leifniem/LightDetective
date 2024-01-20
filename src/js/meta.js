@@ -1,32 +1,29 @@
 export default (exif, filename) => {
+	console.log(exif)
 	return /* html */ `
 	<h3>Metadata</h3>
 	<span class="label">Filename</span>
 	<div class="data">${filename}</div>
 	<span class="label">Camera</span>
-	<div class="data">${exif.Make ?? "Not available"} ${
-		exif.Model ?? exif.Model ?? ""
+	<div class="data">${exif.Make?.value ?? "Not available"} ${
+		exif.Model?.value ?? "Not available"
 	}</div>
 	<span class="label">Lens</span>
-	<div class="data">${exif.LensModel ?? exif.Lens ?? "Not available"}</div>
+	<div class="data">${
+		exif.LensModel?.value ?? exif.Lens?.value ?? "Not available"
+	}</div>
 	<span class="label">Exposure Time</span>
 	<div class="data">${
-		"ExposureTime" in exif
-			? `${
-					exif.ExposureTime >= 1
-						? exif.ExposureTime
-						: "1/" + 1 / exif.ExposureTime
-			  } s`
-			: "Not available"
+		exif.ExposureTime?.description + "s" ?? "Not available"
 	}</div>
 	<span class="label">Aperture</span>
-	<div class="data">${exif.ApertureValue.toFixed(1) ?? "Not available"}</div>
+	<div class="data">${exif.ApertureValue?.description ?? "Not available"}</div>
 	<span class="label">ISO</span>
-	<div class="data">${exif.ISO ?? "Not available"}</div>
+	<div class="data">${exif.ISOSpeedRatings?.value ?? "Not available"}</div>
 	<span class="label">Exposure Mode</span>
-	<div class="data">${exif.ExposureMode ?? "Not available"}</div>
+	<div class="data">${exif.ExposureMode?.value ?? "Not available"}</div>
 	<span class="label">Flash</span>
-	<div class="data">${exif.Flash ?? "Not available"}</div>
+	<div class="data">${exif.Flash?.value ?? "Not available"}</div>
 	`
 }
 
@@ -73,10 +70,10 @@ function renderToneCurves(curve, color) {
 	let path = ""
 	let points = ""
 	for (let i = 0; i < curve.length - 1; i++) {
-		const current = stringToXY(curve[i])
-		const next = stringToXY(curve[i + 1])
+		const current = stringToXY(curve[i]?.value)
+		const next = stringToXY(curve[i + 1]?.value)
 		if (i == 0) {
-			const nextplus = stringToXY(curve[i + 1])
+			const nextplus = stringToXY(curve[i + 1]?.value)
 			const c1 = [
 				current[0] - (nextplus[1] - next[1]) / Math.PI,
 				current[1] + (nextplus[0] - next[0]) / Math.PI
@@ -87,7 +84,7 @@ function renderToneCurves(curve, color) {
 			]
 			path += `M ${current.join(",")} C ${c1} ${c2} ${next.join(",")}`
 		} else {
-			const prev = stringToXY(curve[i - 1])
+			const prev = stringToXY(curve[i - 1]?.value)
 			const c1 = [
 				current[0] + (current[0] - prev[0]) / Math.PI,
 				current[1] + (current[1] - prev[1]) / Math.PI
@@ -100,8 +97,7 @@ function renderToneCurves(curve, color) {
 		}
 	}
 	curve.forEach(point => {
-		const pos = stringToXY(point)
-		points += `<circle cx="${pos[0]}" cy="${pos[1]}" r="3" fill="${color}" />`
+		points += `<circle cx="${point[0]}" cy="${point[1]}" r="3" fill="${color}" />`
 	})
 	return `<path d="${path}" stroke="${color}" stroke-width="1" fill="none" />${points}`
 }
@@ -116,53 +112,51 @@ export function settings(exif) {
 	return /* html */ `
 	<h3>Settings</h3>
 	<div class="block">
-  <!-- image-metadata-extractor currently has an issue extracting RDF structs -->
-	<!-- <span class="label">Look</span>
-	  ${exif.Look ?? "Look not available"}
+	<span class="label">Look</span>
+	  ${exif.Look.value.Name.value ?? "Look not available"}
 	  ${
-			exif.Look?.Amount
+			exif.Look?.value.Amount?.value
 				? sliderCell(
 						"Amount",
 						"slider-bw",
-						Math.round(parseFloat(exif.Look?.Amount) * 100),
+						Math.round(parseFloat(exif.Look?.value.Amount?.value) * 100),
 						0,
 						200
 				  )
 				: ""
-		} -->
+		}
 	<span class="label">White Balance</span>
-	${exif.WhiteBalance}
 	${sliderCell(
 		"Temp",
 		"slider-temperature",
-		exif.Temperature ?? exif.IncrementalTemperature,
+		exif.Temperature?.value ?? exif.IncrementalTemperature?.value,
 		"Temperature" in exif ? 2000 : -100,
 		"Temperature" in exif ? 50000 : 100
 	)}
 	${sliderCell(
 		"Tint",
 		"slider-tint",
-		exif.Tint ?? exif.IncrementalTint,
+		exif.Tint?.value ?? exif.IncrementalTint?.value,
 		"Tint" in exif ? -150 : -100,
 		"Tint" in exif ? 150 : 100
 	)}
 	</div>
 	<div class="block">
   <span class="label">Basic Settings</span>
-	${sliderCell("Exposure", "slider-bw", exif.Exposure2012, -5, +5)}
-	${sliderCell("Contrast", "slider-bw", exif.Contrast2012, -100, +100)}
-	${sliderCell("Highlights", "slider-bw", exif.Highlights2012, -100, +100)}
-	${sliderCell("Shadows", "slider-bw", exif.Shadows2012, -100, +100)}
-	${sliderCell("Whites", "slider-bw", exif.Whites2012, -100, +100)}
-	${sliderCell("Blacks", "slider-bw", exif.Blacks2012, -100, +100)}
+	${sliderCell("Exposure", "slider-bw", exif.Exposure2012?.value, -5, +5)}
+	${sliderCell("Contrast", "slider-bw", exif.Contrast2012?.value, -100, +100)}
+	${sliderCell("Highlights", "slider-bw", exif.Highlights2012?.value, -100, +100)}
+	${sliderCell("Shadows", "slider-bw", exif.Shadows2012?.value, -100, +100)}
+	${sliderCell("Whites", "slider-bw", exif.Whites2012?.value, -100, +100)}
+	${sliderCell("Blacks", "slider-bw", exif.Blacks2012?.value, -100, +100)}
 	</div>
 	<div class="block">
 	<span class="label">Presence</span>
-	${sliderCell("Texture", "slider-bw", exif.Texture, -100, +100)}
-	${sliderCell("Clarity", "slider-bw", exif.Clarity2012, -100, +100)}
-	${sliderCell("Dehaze", "slider-bw", exif.Dehaze, -100, +100)}
-	${sliderCell("Vibrance", "slider-bw", exif.Vibrance, -100, +100)}
-	${sliderCell("Saturation", "slider-bw", exif.Saturation, -100, +100)}
+	${sliderCell("Texture", "slider-bw", exif.Texture?.value, -100, +100)}
+	${sliderCell("Clarity", "slider-bw", exif.Clarity2012?.value, -100, +100)}
+	${sliderCell("Dehaze", "slider-bw", exif.Dehaze?.value, -100, +100)}
+	${sliderCell("Vibrance", "slider-bw", exif.Vibrance?.value, -100, +100)}
+	${sliderCell("Saturation", "slider-bw", exif.Saturation?.value, -100, +100)}
 	</div>
 	<div class="block">
 	<span class="label">Curves</span>
@@ -170,10 +164,10 @@ export function settings(exif) {
 	<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 255 255" class="curves">
 	<rect width="102%" height="33%" x="-1%" y="33%" fill="none" stroke="#4c4c53" stroke-width="1" stroke-dasharray="4,4" />>
 	<rect width="33%" height="102%" y="-1%" x="33%" fill="none" stroke="#4c4c53" stroke-width="1" stroke-dasharray="4,4" />
-  ${renderToneCurves(exif.ToneCurvePV2012Red, "red")}
-  ${renderToneCurves(exif.ToneCurvePV2012Green, "green")}
-  ${renderToneCurves(exif.ToneCurvePV2012Blue, "blue")}
-  ${renderToneCurves(exif.ToneCurvePV2012, "white")}
+  ${renderToneCurves(exif.ToneCurvePV2012Red?.value, "red")}
+  ${renderToneCurves(exif.ToneCurvePV2012Green?.value, "green")}
+  ${renderToneCurves(exif.ToneCurvePV2012Blue?.value, "blue")}
+  ${renderToneCurves(exif.ToneCurvePV2012?.value, "white")}
 	</svg>
 	</div>
 	</div>
@@ -181,132 +175,162 @@ export function settings(exif) {
 	<span class="label">HSL</span>
 		<div class="hsl-values">
 		Red
-			<div class="value">H${exif.HueAdjustmentRed}</div>
-			<div class="value">S${exif.SaturationAdjustmentRed}</div>
-			<div class="value">L${exif.LuminanceAdjustmentRed}</div>
+			<div class="value">H${exif.HueAdjustmentRed?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentRed?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentRed?.value}</div>
 		Orange
-			<div class="value">H${exif.HueAdjustmentOrange}</div>
-			<div class="value">S${exif.SaturationAdjustmentOrange}</div>
-			<div class="value">L${exif.LuminanceAdjustmentOrange}</div>
+			<div class="value">H${exif.HueAdjustmentOrange?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentOrange?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentOrange?.value}</div>
 		Yellow
-			<div class="value">H${exif.HueAdjustmentYellow}</div>
-			<div class="value">S${exif.SaturationAdjustmentYellow}</div>
-			<div class="value">L${exif.LuminanceAdjustmentYellow}</div>
+			<div class="value">H${exif.HueAdjustmentYellow?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentYellow?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentYellow?.value}</div>
 		Green
-			<div class="value">H${exif.HueAdjustmentGreen}</div>
-			<div class="value">S${exif.SaturationAdjustmentGreen}</div>
-			<div class="value">L${exif.LuminanceAdjustmentGreen}</div>
+			<div class="value">H${exif.HueAdjustmentGreen?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentGreen?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentGreen?.value}</div>
 		Aqua
-			<div class="value">H${exif.HueAdjustmentAqua}</div>
-			<div class="value">S${exif.SaturationAdjustmentAqua}</div>
-			<div class="value">L${exif.LuminanceAdjustmentAqua}</div>
+			<div class="value">H${exif.HueAdjustmentAqua?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentAqua?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentAqua?.value}</div>
 		Blue
-			<div class="value">H${exif.HueAdjustmentBlue}</div>
-			<div class="value">S${exif.SaturationAdjustmentBlue}</div>
-			<div class="value">L${exif.LuminanceAdjustmentBlue}</div>
+			<div class="value">H${exif.HueAdjustmentBlue?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentBlue?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentBlue?.value}</div>
 		Purple
-			<div class="value">H${exif.HueAdjustmentPurple}</div>
-			<div class="value">S${exif.SaturationAdjustmentPurple}</div>
-			<div class="value">L${exif.LuminanceAdjustmentPurple}</div>
+			<div class="value">H${exif.HueAdjustmentPurple?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentPurple?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentPurple?.value}</div>
 		Magenta
-			<div class="value">H${exif.HueAdjustmentMagenta}</div>
-			<div class="value">S${exif.SaturationAdjustmentMagenta}</div>
-			<div class="value">L${exif.LuminanceAdjustmentMagenta}</div>
+			<div class="value">H${exif.HueAdjustmentMagenta?.value}</div>
+			<div class="value">S${exif.SaturationAdjustmentMagenta?.value}</div>
+			<div class="value">L${exif.LuminanceAdjustmentMagenta?.value}</div>
 		</div>
 	</div>
 	<div class="block">
 	<span class="label">Split Toning</span>
 	<span class="label">Shadows</span>
-	${sliderCell("Hue", "slider-rainbow", exif.SplitToningShadowHue, 0, +100)}
+	${sliderCell(
+		"Hue",
+		"slider-rainbow",
+		exif.SplitToningShadowHue?.value,
+		0,
+		+100
+	)}
 	${sliderCell(
 		"Saturation",
 		"slider-blackred",
-		exif.SplitToningShadowSaturation,
+		exif.SplitToningShadowSaturation?.value,
 		0,
 		+100
 	)}
 	<span class="label">Highlights</span>
-	${sliderCell("Hue", "slider-rainbow", exif.SplitToningHighlightHue, -100, +100)}
+	${sliderCell(
+		"Hue",
+		"slider-rainbow",
+		exif.SplitToningHighlightHue?.value,
+		-100,
+		+100
+	)}
 	${sliderCell(
 		"Saturation",
 		"slider-blackred",
-		exif.SplitToningHighlightSaturation,
+		exif.SplitToningHighlightSaturation?.value,
 		-100,
 		+100
 	)}
 	<span class="label">Balance</span>
-	${sliderCell("Balance", "slider-bw", exif.SplitToningBalance, -100, +100)}
+	${sliderCell(
+		"Balance",
+		"slider-bw",
+		exif.SplitToningBalance?.value,
+		-100,
+		+100
+	)}
 	</div>
 	<div class="block">
 	<span class="label">Color Grading</span>
   <div class="row">
     ${
-			exif.ColorGradeGlobalSat !== "0"
+			exif.ColorGradeGlobalSat?.value !== "0"
 				? colorGradingCell(
 						"Global",
-						exif.ColorGradeGlobalLum ?? 0,
-						exif.ColorGradeGlobalHue ?? 0,
-						exif.ColorGradeGlobalSat ?? 0
+						exif.ColorGradeGlobalLum?.value ?? 0,
+						exif.ColorGradeGlobalHue?.value ?? 0,
+						exif.ColorGradeGlobalSat?.value ?? 0
 				  )
 				: ""
 		}
     ${colorGradingCell(
 			"Midtones",
-			exif.ColorGradeMidtoneLum ?? 0,
-			exif.ColorGradeMidtoneHue ?? 0,
-			exif.ColorGradeMidtoneSat ?? 0
+			exif.ColorGradeMidtoneLum?.value ?? 0,
+			exif.ColorGradeMidtoneHue?.value ?? 0,
+			exif.ColorGradeMidtoneSat?.value ?? 0
 		)}
   </div>
   <div class="row">
     ${colorGradingCell(
 			"Shadows",
-			exif.ColorGradeShadowLum ?? 0,
-			exif.ColorGradeShadowHue ?? 0,
-			exif.ColorGradeShadowSat ?? 0
+			exif.ColorGradeShadowLum?.value ?? 0,
+			exif.ColorGradeShadowHue?.value ?? 0,
+			exif.ColorGradeShadowSat?.value ?? 0
 		)}
     ${colorGradingCell(
 			"Highlights",
-			exif.ColorGradeHighlightLum ?? 0,
-			exif.ColorGradeHighlightHue ?? 0,
-			exif.ColorGradeHighlightSat ?? 0
+			exif.ColorGradeHighlightLum?.value ?? 0,
+			exif.ColorGradeHighlightHue?.value ?? 0,
+			exif.ColorGradeHighlightSat?.value ?? 0
 		)}
   </div>
   	${sliderCell(
 			"Blending",
 			"slider-bw",
-			exif.ColorGradeBlending ?? 0,
+			exif.ColorGradeBlending?.value ?? 0,
+			0,
+			+100
+		)}
+  	${sliderCell(
+			"Balance",
+			"slider-bw",
+			exif.ColorGradeBalance?.value ?? 0,
 			-100,
 			+100
 		)}
-  	${sliderCell("Balance", "slider-bw", exif.ColorGradeBalance ?? 0, -100, +100)}
   </div>
 	<div class="block">
 	<span class="label">Details</span>
 	<div class="cell">Sharpening</div>
-	${sliderCell("Amount", "slider-blackred", exif.Sharpness, 0, 150)}
-	${sliderCell("Radius", "slider-bw", exif.SharpenRadius, 0.0, 3.0)}
-	${sliderCell("Detail", "slider-bw", exif.SharpenDetail, 0, 100)}
-	${sliderCell("Masking", "slider-whiteblack", exif.SharpenEdgeMasking, 0, 100)}
+	${sliderCell("Amount", "slider-blackred", exif.Sharpness?.value, 0, 150)}
+	${sliderCell("Radius", "slider-bw", exif.SharpenRadius?.value, 0.0, 3.0)}
+	${sliderCell("Detail", "slider-bw", exif.SharpenDetail?.value, 0, 100)}
+	${sliderCell(
+		"Masking",
+		"slider-whiteblack",
+		exif.SharpenEdgeMasking?.value,
+		0,
+		100
+	)}
 	<div class="cell">Noise Reduction</div>
 	<span class="label">Luminosity</span>
-	${sliderCell("Amount", "slider-bw", exif.LuminanceSmoothing, 0, 100)}
+	${sliderCell("Amount", "slider-bw", exif.LuminanceSmoothing?.value, 0, 100)}
 	${
-		exif.LuminanceNoiseReductionDetail
+		exif.LuminanceNoiseReductionDetail?.value
 			? sliderCell(
 					"Detail",
 					"slider-bw",
-					exif.LuminanceNoiseReductionDetail,
+					exif.LuminanceNoiseReductionDetail?.value,
 					0,
 					100
 			  )
 			: ""
 	}
 	${
-		exif.LuminanceNoiseReductionContrast
+		exif.LuminanceNoiseReductionContrast?.value
 			? sliderCell(
 					"Contrast",
 					"slider-bw",
-					exif.LuminanceNoiseReductionContrast,
+					exif.LuminanceNoiseReductionContrast?.value,
 					0,
 					100
 			  )
@@ -316,7 +340,13 @@ export function settings(exif) {
 	<span class="label">Color</span>
 	${
 		"ColorNoiseReduction" in exif
-			? sliderCell("Amount", "slider-bw", exif.ColorNoiseReduction, 0, 100)
+			? sliderCell(
+					"Amount",
+					"slider-bw",
+					exif.ColorNoiseReduction?.value,
+					0,
+					100
+			  )
 			: ""
 	}
 	${
@@ -324,7 +354,7 @@ export function settings(exif) {
 			? sliderCell(
 					"Detail",
 					"slider-bw",
-					exif.ColorNoiseReductionDetail,
+					exif.ColorNoiseReductionDetail?.value,
 					0,
 					100
 			  )
@@ -335,7 +365,7 @@ export function settings(exif) {
 			? sliderCell(
 					"Smoothness",
 					"slider-bw",
-					exif.ColorNoiseReductionSmoothness,
+					exif.ColorNoiseReductionSmoothness?.value,
 					0,
 					100
 			  )
@@ -345,75 +375,81 @@ export function settings(exif) {
 	<div class="block">
 	<span class="label">Corrections</span>
 		<div class="cell">Distortion <span>${
-			exif.DistortionCorrectionAlreadyApplied
-				? exif.DistortionCorrectionAlreadyApplied
+			exif.DistortionCorrectionAlreadyApplied?.value
+				? exif.DistortionCorrectionAlreadyApplied?.value
 				: "False"
 		}</span></div>
 		<div class="cell">Vignette <span>${
-			exif.VignetteCorrectionAlreadyApplied
-				? exif.VignetteCorrectionAlreadyApplied
+			exif.VignetteCorrectionAlreadyApplied?.value
+				? exif.VignetteCorrectionAlreadyApplied?.value
 				: "False"
 		}</span></div>
 		<div class="cell">CA <span>${
-			exif.LateralChromaticAberrationCorrectionAlreadyApplied
-				? exif.LateralChromaticAberrationCorrectionAlreadyApplied
+			exif.LateralChromaticAberrationCorrectionAlreadyApplied?.value
+				? exif.LateralChromaticAberrationCorrectionAlreadyApplied?.value
 				: "False"
 		}</span></div>
 		<div class="cell">Upright <span>${
-			parseInt(exif.PerspectiveUpright) >= 1 ? "True" : "False"
+			parseInt(exif.PerspectiveUpright?.value) >= 1 ? "True" : "False"
 		}</span></div>
 	</div>
 	<div class="block">
 	<span class="label">Effects</span>
   <div class="cell">
-  Lens Blur <span>${exif.LensBlur?.Active ? "True" : "False"}</span>
+  Lens Blur <span>${exif.LensBlur?.value?.Active ? "True" : "False"}</span>
   </div>
 	<div>
 	<span class="label">Vignette</span>
 	${
-		exif.PostCropVignetteAmount
+		exif.PostCropVignetteAmount?.value
 			? sliderCell(
 					"Amount",
 					"slider-bw",
-					exif.PostCropVignetteAmount,
+					exif.PostCropVignetteAmount?.value,
 					-100,
 					+100
 			  )
 			: ""
 	}
 	${
-		exif.PostCropVignetteMidpoint
+		exif.PostCropVignetteMidpoint?.value
 			? sliderCell(
 					"Midpoint",
 					"slider-bw",
-					exif.PostCropVignetteMidpoint,
+					exif.PostCropVignetteMidpoint?.value,
 					0,
 					100
 			  )
 			: ""
 	}
 	${
-		exif.PostCropVignetteRoundness
+		exif.PostCropVignetteRoundness?.value
 			? sliderCell(
 					"Roundness",
 					"slider-bw",
-					exif.PostCropVignetteRoundness,
+					exif.PostCropVignetteRoundness?.value,
 					-100,
 					+100
 			  )
 			: ""
 	}
 	${
-		exif.PostCropVignetteFeather
-			? sliderCell("Feather", "slider-bw", exif.PostCropVignetteFeather, 0, 100)
+		exif.PostCropVignetteFeather?.value
+			? sliderCell(
+					"Feather",
+					"slider-bw",
+					exif.PostCropVignetteFeather?.value,
+					0,
+					100
+			  )
 			: ""
 	}
 	${
-		exif.PostCropVignetteHighlightContrast
+		exif.PostCropVignetteHighlightContrast?.value
 			? sliderCell(
 					"Highlights",
 					"slider-bw",
-					exif.PostCropVignetteHighlightContrast,
+					exif.PostCropVignetteHighlightContrast?.value,
 					0,
 					100
 			  )
@@ -422,38 +458,54 @@ export function settings(exif) {
 	</div>
 	<span class="label">Grain</span>
 	${
-		exif.GrainAmount
-			? sliderCell("Amount", "slider-bw", exif.GrainAmount, 0, 100)
+		exif.GrainAmount?.value
+			? sliderCell("Amount", "slider-bw", exif.GrainAmount?.value, 0, 100)
 			: ""
 	}
-	${exif.GrainSize ? sliderCell("Size", "slider-bw", exif.GrainSize, 0, 100) : ""}
 	${
-		exif.GrainFrequency
-			? sliderCell("Frequency", "slider-bw", exif.GrainFrequency, 0, 100)
+		exif.GrainSize?.value
+			? sliderCell("Size", "slider-bw", exif.GrainSize?.value, 0, 100)
+			: ""
+	}
+	${
+		exif.GrainFrequency?.value
+			? sliderCell("Frequency", "slider-bw", exif.GrainFrequency?.value, 0, 100)
 			: ""
 	}
 	</div>
 	<div class="block">
 	<span class="label">Calibration</span>
 	<div>
-	${sliderCell("Shadow Tint", "slider-tint", exif.ShadowTint, -100, +100)}
+	${sliderCell("Shadow Tint", "slider-tint", exif.ShadowTint?.value, -100, +100)}
 	</div>
 	<div>
 	<span class="label">Red</span>
-	${sliderCell("Hue", "slider-magentaorange", exif.RedHue, -100, +100)}
-	${sliderCell("Saturation", "slider-blackred", exif.RedSaturation, -100, +100)}
+	${sliderCell("Hue", "slider-magentaorange", exif.RedHue?.value, -100, +100)}
+	${sliderCell(
+		"Saturation",
+		"slider-blackred",
+		exif.RedSaturation?.value,
+		-100,
+		+100
+	)}
 	<span class="label">Green</span>
-	${sliderCell("Hue", "slider-yellowaqua", exif.GreenHue, -100, +100)}
+	${sliderCell("Hue", "slider-yellowaqua", exif.GreenHue?.value, -100, +100)}
 	${sliderCell(
 		"Saturation",
 		"slider-blackgreen",
-		exif.GreenSaturation,
+		exif.GreenSaturation?.value,
 		-100,
 		+100
 	)}
 	<span class="label">Blue</span>
-	${sliderCell("Hue", "slider-aquapurple", exif.BlueHue, -100, +100)}
-	${sliderCell("Saturation", "slider-blackblue", exif.BlueSaturation, -100, +100)}
+	${sliderCell("Hue", "slider-aquapurple", exif.BlueHue?.value, -100, +100)}
+	${sliderCell(
+		"Saturation",
+		"slider-blackblue",
+		exif.BlueSaturation?.value,
+		-100,
+		+100
+	)}
 	</div>
 	`
 }

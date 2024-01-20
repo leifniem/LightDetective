@@ -18,6 +18,15 @@
 		"xmp",
 		"adobe"
 	],
+	"exifreader": {
+		"include": {
+			"jpeg": true,
+			"webp": true,
+			"heic": true,
+			"png": true,
+			"xmp": true
+		}
+	},
 	"author": "Leif Niemczik",
 	"license": "ISC",
 	"devDependencies": {
@@ -27,8 +36,8 @@
 		"vite": "^2.9.16"
 	},
 	"dependencies": {
-		"file-saver": "^2.0.5",
-		"image-info-extractor": "^0.1.0"
+		"exifreader": "^4.20.0",
+		"file-saver": "^2.0.5"
 	},
 	"browserslist": [
 		"> 1%",
