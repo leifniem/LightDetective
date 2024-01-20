@@ -33,7 +33,7 @@
 		"autoprefixer": "^10.4.16",
 		"postcss-input-range": "^5.0.0",
 		"postcss-preset-env": "^7.8.3",
-		"vite": "^2.9.16"
+		"vite": "^2.9.17"
 	},
 	"dependencies": {
 		"exifreader": "^4.20.0",

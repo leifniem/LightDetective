@@ -5,18 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  exifr:
-    specifier: github:m-hayabusa/exifr
-    version: github.com/m-hayabusa/exifr/195b49df31564974ce89b4cc5d0dc47d9505d59c
   exifreader:
     specifier: ^4.20.0
     version: 4.20.0
   file-saver:
     specifier: ^2.0.5
     version: 2.0.5
-  image-info-extractor:
-    specifier: ^0.1.1
-    version: 0.1.1
 
 devDependencies:
   autoprefixer:
@@ -29,8 +23,8 @@ devDependencies:
     specifier: ^7.8.3
     version: 7.8.3(postcss@8.4.33)
   vite:
-    specifier: ^2.9.16
-    version: 2.9.16
+    specifier: ^2.9.17
+    version: 2.9.17
 
 packages:
 
@@ -528,10 +522,6 @@ packages:
       function-bind: 1.1.2
     dev: true
 
-  /image-info-extractor@0.1.1:
-    resolution: {integrity: sha512-kEJDH/g0nTLO+xW1oh2b63jC5dQ+S09TDO/0aTHmXbgHqM+K6Q8DmE+zfi4KO7sOjzmQL2jLH0LmhkegG2ULmA==}
-    dev: false
-
   /is-core-module@2.13.1:
     resolution: {integrity: sha512-hHrIjvZsftOsvKSn2TRYl63zvxsgE0K+0mYMoH6gD4omR5IWB2KynivBQczo3+wF1cCkjzvptnI9Q0sPU66ilw==}
     dependencies:
@@ -963,8 +953,8 @@ packages:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
 
-  /vite@2.9.16:
-    resolution: {integrity: sha512-X+6q8KPyeuBvTQV8AVSnKDvXoBMnTx8zxh54sOwmmuOdxkjMmEJXH2UEchA+vTMps1xw9vL64uwJOWryULg7nA==}
+  /vite@2.9.17:
+    resolution: {integrity: sha512-XxcRzra6d7xrKXH66jZUgb+srThoPu+TLJc06GifUyKq9JmjHkc1Numc8ra0h56rju2jfVWw3B3fs5l3OFMvUw==}
     engines: {node: '>=12.2.0'}
     hasBin: true
     peerDependencies:
@@ -986,9 +976,3 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
-
-  github.com/m-hayabusa/exifr/195b49df31564974ce89b4cc5d0dc47d9505d59c:
-    resolution: {tarball: https://codeload.github.com/m-hayabusa/exifr/tar.gz/195b49df31564974ce89b4cc5d0dc47d9505d59c}
-    name: exifr
-    version: 7.1.3
-    dev: false
