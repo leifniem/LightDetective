@@ -114,7 +114,7 @@ export function settings(exif) {
 	<h3>Settings</h3>
 	<div class="block">
 	<span class="label">Look</span>
-	  ${exif.Look.value.Name.value ?? "Look not available"}
+	  ${exif.Look?.value.Name?.value ?? "Look not available"}
 	  ${
 			exif.Look?.value.Amount?.value
 				? sliderCell(
