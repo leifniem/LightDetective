@@ -97,7 +97,8 @@ function renderToneCurves(curve, color) {
 		}
 	}
 	curve.forEach(point => {
-		points += `<circle cx="${point[0]}" cy="${point[1]}" r="3" fill="${color}" />`
+		const pos = stringToXY(point.value)
+		points += `<circle cx="${pos[0]}" cy="${pos[1]}" r="3" fill="${color}" />`
 	})
 	return `<path d="${path}" stroke="${color}" stroke-width="1" fill="none" />${points}`
 }
