@@ -152,6 +152,12 @@ a {
   position: relative;
 }
 
+#result .dl-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .settings {
   grid-column: 2/-1;
   columns: 2;
