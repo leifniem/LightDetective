@@ -1,6 +1,5 @@
 import { saveAs } from "file-saver"
 import meta, { settings } from "./meta"
-import exifr from "exifr/dist/lite.esm.mjs"
 import * as exifreader from "exifreader"
 
 const dropArea = document.querySelector("#drop")
