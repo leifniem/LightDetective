@@ -65,7 +65,8 @@ async function processFile(file) {
 		dropArea.classList.add("loading")
 		filename = file.name
 		const result = await exifreader.load(file, { expanded: true })
-		rawXMP = result.xmp._raw
+		if (!result.xmp) throw new Error("XMP data is missing in EXIF");
+    rawXMP = result.xmp._raw
 		console.log(result)
 		imageReader.readAsDataURL(file)
 		metaDataContainer.innerHTML = meta(
@@ -77,16 +78,19 @@ async function processFile(file) {
 			...result.exif
 		})
 	} catch (err) {
-		console.error(
-			"There has been an issue reading necessary data. It is as follows: "
-		)
-		console.error(err)
+		resultContainer.classList.remove("hidden")
+		dropArea.classList.add("hidden")
+    disclaimer.classList.add("hidden")
 		resultContainer.innerHTML = /* html */ `<h3>Ouch, either no EXIF data to be found here or an issue.</h3>
 		<br/>
     <p>Error Message:</p>
     <pre>${err}</pre>
 		<br/>
 		<a href="." class="button retry">Try another file ↻</a>`
+		console.error(
+			"There has been an issue reading necessary data. It is as follows: "
+		)
+		console.error(err)
 	}
 }
 
